@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using FluentAssertions.Extensions;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Threading.Tasks;
 
@@ -10,12 +11,16 @@ namespace ConsoleApp
             Host.CreateDefaultBuilder(args)
                 .ConfigureServices((h, s) =>
                 {
-                    s.AddHostedService<Worker>();
+                    s.Configure<HostOptions>(o =>
+                    {
+                        o.ShutdownTimeout = 20.Seconds();
+                    });
+                    s.AddHostedService<WorkerService>();
                 });
 
         private static async Task Main(string[] args)
         {
-            await CreateHostBuilder(args).Build().RunAsync();
+            await CreateHostBuilder(args).RunConsoleAsync();
         }
     }
 }
